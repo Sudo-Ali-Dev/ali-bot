@@ -59,6 +59,8 @@ async function callWithRotation(
 const ALLOWED_ORIGINS = [
   'https://sudoali.dev',
   'http://sudoali.dev',
+  'https://sudo-ali-dev.github.io',
+  'https://ali-bot-topaz.vercel.app',
   'http://localhost:4322',
   'http://localhost:4321',
 ];
