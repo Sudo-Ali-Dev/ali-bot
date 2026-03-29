@@ -402,9 +402,12 @@ const heroPhrases = [
       width: 0.5rem;
       height: 0.5rem;
       border-radius: 999px;
-      background: var(--color-accent);
+      background-color: var(--color-accent);
       box-shadow: 0 0 0.45rem color-mix(in oklab, var(--color-accent) 65%, transparent);
       flex: none;
+      transition:
+        background-color var(--accent-speed) linear,
+        box-shadow var(--accent-speed) linear;
     }
 
     .chat-live-text {
@@ -527,7 +530,7 @@ const heroPhrases = [
       border-radius: 999px;
       min-width: 6rem;
       padding: var(--spacing-sm) var(--spacing-lg);
-      background: var(--color-accent);
+      background-color: var(--color-accent);
       color: var(--color-fg-on-accent-most-contrast);
       font-family: var(--font-mono);
       font-size: var(--text-xs);
@@ -536,7 +539,13 @@ const heroPhrases = [
       letter-spacing: 0.03em;
       cursor: pointer;
       border: 1px solid color-mix(in oklab, var(--chat-border) 55%, transparent);
-      transition: transform 0.2s ease, opacity 0.2s ease, filter 0.2s ease;
+      transition:
+        background-color var(--accent-speed) linear,
+        border-color var(--accent-speed) linear,
+        color 0.3s ease,
+        transform 0.2s ease,
+        opacity 0.2s ease,
+        filter 0.2s ease;
     }
 
     .chat-send:hover,
