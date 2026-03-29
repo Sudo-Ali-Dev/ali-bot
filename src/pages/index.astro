@@ -573,6 +573,21 @@ const heroPhrases = [
       padding-block: var(--spacing-lg);
     }
 
+    .footer-updated {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45ch;
+      line-height: 1;
+    }
+
+    .footer-marker {
+      font-size: 1.35em;
+      line-height: 1;
+      display: inline-flex;
+      align-items: center;
+      transform: translateY(-0.02em);
+    }
+
     @media (max-width: 768px) {
       .inner {
         width: 90%;
@@ -649,15 +664,13 @@ const heroPhrases = [
 
       <section id="chat" class="chat-panel bg-accent">
         <div class="inner">
-          <h3 class="type-2xl chat-intro">
-            Ask anything. Ali responds with short, direct answers in real time.
-          </h3>
+          <h3 class="type-2xl chat-intro">Ask anything.</h3>
 
           <div class="chat-frame">
             <div class="chat-meta">
               <div class="chat-meta-left">
                 <span class="chat-live-dot" aria-hidden="true"></span>
-                <p class="chat-live-text type-caption">Ali chat is online</p>
+                <p class="chat-live-text type-caption">Ali is online</p>
               </div>
               <p class="chat-meta-right">Real-time</p>
             </div>
@@ -680,8 +693,8 @@ const heroPhrases = [
 
       <footer class="site-footer bg-accent">
         <div class="inner footer-row type-caption">
-          <p><span class="type-base">+ </span>Updated Mar 2026</p>
-          <p>Built with Astro, Groq, and care.</p>
+          <p class="footer-updated"><span class="footer-marker" aria-hidden="true">&#x262E;</span><span>Updated Mar 2026</span></p>
+          <p>Built by Muhammad Ali with Astro, Groq, and care.</p>
         </div>
       </footer>
     </div>
