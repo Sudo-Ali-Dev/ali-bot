@@ -41,6 +41,7 @@ const heroPhrases = [
       --color-white: #fff;
 
       --accent-speed: 5s;
+      --accent-dot-lag: 120ms;
       --color-foreground: #efebd4;
       --color-red: #e67e80;
       --color-orange: #e69875;
@@ -406,8 +407,8 @@ const heroPhrases = [
       box-shadow: 0 0 0.45rem color-mix(in oklab, var(--color-accent) 65%, transparent);
       flex: none;
       transition:
-        background-color var(--accent-speed) linear,
-        box-shadow var(--accent-speed) linear;
+        background-color var(--accent-speed) linear var(--accent-dot-lag),
+        box-shadow var(--accent-speed) linear var(--accent-dot-lag);
     }
 
     .chat-live-text {
@@ -505,18 +506,20 @@ const heroPhrases = [
       flex: 1;
       border: 0;
       outline: 0;
-      border: 1px solid color-mix(in oklab, var(--chat-border) 78%, transparent);
+      border: 1px solid color-mix(in oklab, var(--color-accent) 72%, var(--chat-border));
       padding: var(--spacing-sm) var(--spacing-lg);
       border-radius: 999px;
       background: color-mix(in oklab, var(--chat-surface) 72%, transparent);
       color: var(--color-foreground);
       font-family: var(--font-sans);
       font-size: var(--text-base);
-      transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+      transition:
+        border-color var(--accent-speed) linear var(--accent-dot-lag),
+        box-shadow 0.2s ease,
+        background-color 0.2s ease;
     }
 
     .chat-input:focus {
-      border-color: color-mix(in oklab, var(--color-accent) 72%, var(--chat-border));
       background: color-mix(in oklab, var(--chat-surface) 64%, transparent);
       box-shadow: 0 0 0 2px color-mix(in oklab, var(--color-accent) 25%, transparent);
     }
