@@ -425,6 +425,11 @@ const heroPhrases = [
       white-space: nowrap;
     }
 
+    .chat-messages-wrap {
+      position: relative;
+      background: color-mix(in oklab, var(--chat-surface) 92%, transparent);
+    }
+
     .chat-messages {
       display: flex;
       flex-direction: column;
@@ -433,18 +438,53 @@ const heroPhrases = [
       max-height: min(56rem, 68vh);
       overflow-y: auto;
       padding: var(--spacing-sm);
-      background: color-mix(in oklab, var(--chat-surface) 92%, transparent);
-      scrollbar-width: thin;
-      scrollbar-color: color-mix(in oklab, var(--color-accent) 45%, transparent) transparent;
+      padding-right: calc(var(--spacing-sm) + 0.72rem);
+      background: transparent;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
     }
 
     .chat-messages::-webkit-scrollbar {
-      width: 0.45rem;
+      width: 0;
+      height: 0;
+      display: none;
     }
 
-    .chat-messages::-webkit-scrollbar-thumb {
-      background: color-mix(in oklab, var(--color-accent) 45%, transparent);
+    .chat-scrollbar {
+      position: absolute;
+      top: var(--spacing-sm);
+      right: calc(var(--spacing-xs) * 0.5);
+      bottom: var(--spacing-sm);
+      width: 0.46rem;
       border-radius: 999px;
+      background-color: color-mix(in oklab, var(--chat-surface) 84%, transparent);
+      pointer-events: none;
+      opacity: 0.92;
+      transition:
+        background-color var(--accent-speed) linear,
+        opacity 0.2s ease;
+    }
+
+    .chat-scrollbar-thumb {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 2rem;
+      border-radius: 999px;
+      background-color: var(--color-accent);
+      border: 1px solid color-mix(in oklab, var(--chat-surface) 78%, transparent);
+      box-shadow: 0 0 0.4rem color-mix(in oklab, var(--color-accent) 28%, transparent);
+      transform: translateY(0);
+      will-change: transform;
+      transition:
+        background-color var(--accent-speed) linear,
+        border-color var(--accent-speed) linear,
+        box-shadow var(--accent-speed) linear;
+    }
+
+    .chat-scrollbar.is-hidden {
+      opacity: 0;
     }
 
     .msg-row {
@@ -648,8 +688,14 @@ const heroPhrases = [
 
       .chat-messages {
         padding: var(--spacing-sm) var(--spacing-xs);
+        padding-right: calc(var(--spacing-xs) + 0.72rem);
         gap: var(--spacing-xs);
         max-height: min(40rem, 62vh);
+      }
+
+      .chat-scrollbar {
+        right: 0.2rem;
+        width: 0.4rem;
       }
 
       .chat-form {
@@ -722,7 +768,12 @@ const heroPhrases = [
               <p class="chat-meta-right">Real-time</p>
             </div>
 
-            <div id="chat-messages" class="chat-messages" aria-live="polite"></div>
+            <div class="chat-messages-wrap">
+              <div id="chat-messages" class="chat-messages" aria-live="polite"></div>
+              <div id="chat-scrollbar" class="chat-scrollbar" aria-hidden="true">
+                <span id="chat-scrollbar-thumb" class="chat-scrollbar-thumb"></span>
+              </div>
+            </div>
 
             <form id="chat-form" class="chat-form">
               <input
@@ -968,7 +1019,9 @@ const heroPhrases = [
         var input = document.getElementById('chat-input');
         var list = document.getElementById('chat-messages');
         var send = document.getElementById('chat-send');
-        if (!form || !input || !list || !send) return;
+        var scrollbar = document.getElementById('chat-scrollbar');
+        var scrollbarThumb = document.getElementById('chat-scrollbar-thumb');
+        if (!form || !input || !list || !send || !scrollbar || !scrollbarThumb) return;
 
         var history = [];
         var pending = null;
@@ -979,8 +1032,33 @@ const heroPhrases = [
           return div.innerHTML;
         }
 
+        function syncScrollbar() {
+          var maxScroll = list.scrollHeight - list.clientHeight;
+
+          if (maxScroll <= 0) {
+            scrollbar.classList.add('is-hidden');
+            scrollbarThumb.style.height = '0px';
+            scrollbarThumb.style.transform = 'translateY(0px)';
+            return;
+          }
+
+          scrollbar.classList.remove('is-hidden');
+
+          var trackHeight = scrollbar.clientHeight;
+          var minThumbHeight = 30;
+          var thumbHeight = Math.max((list.clientHeight / list.scrollHeight) * trackHeight, minThumbHeight);
+          thumbHeight = Math.min(thumbHeight, trackHeight);
+
+          var maxThumbOffset = Math.max(trackHeight - thumbHeight, 0);
+          var thumbOffset = maxThumbOffset * (list.scrollTop / maxScroll);
+
+          scrollbarThumb.style.height = thumbHeight + 'px';
+          scrollbarThumb.style.transform = 'translateY(' + thumbOffset + 'px)';
+        }
+
         function scrollToBottom() {
           list.scrollTop = list.scrollHeight;
+          requestAnimationFrame(syncScrollbar);
         }
 
         function createMessageElement(role, content, isPending) {
@@ -1018,6 +1096,7 @@ const heroPhrases = [
           if (pending) {
             pending.remove();
             pending = null;
+            requestAnimationFrame(syncScrollbar);
           }
         }
 
@@ -1031,6 +1110,12 @@ const heroPhrases = [
         var welcome = 'Hey. I am live. Ask me anything.';
         addMessage('assistant', welcome);
         history.push({ role: 'assistant', content: welcome });
+
+        list.addEventListener('scroll', syncScrollbar, { passive: true });
+        window.addEventListener('resize', function () {
+          requestAnimationFrame(syncScrollbar);
+        });
+        requestAnimationFrame(syncScrollbar);
 
         form.addEventListener('submit', async function (event) {
           event.preventDefault();
