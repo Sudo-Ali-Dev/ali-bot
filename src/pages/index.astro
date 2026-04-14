@@ -31,7 +31,7 @@ const heroPhrases = [
     rel="stylesheet"
   />
 
-  <style>
+  <style is:global>
     :root,
     :host {
       --font-sans: Inter, 'Plus Jakarta Sans', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
@@ -78,6 +78,7 @@ const heroPhrases = [
       --spacing-2xs: clamp(0.4375rem, 0.3935rem + 0.1878vw, 0.5625rem);
       --spacing-xs: clamp(0.6875rem, 0.6215rem + 0.2817vw, 0.875rem);
       --spacing-sm: clamp(0.875rem, 0.787rem + 0.3756vw, 1.125rem);
+      --spacing-md: clamp(1.25rem, 1.125rem + 0.5vw, 1.5rem);
       --spacing-lg: clamp(1.75rem, 1.5739rem + 0.7512vw, 2.25rem);
       --spacing-xl: clamp(2.625rem, 2.3609rem + 1.1268vw, 3.375rem);
       --spacing-2xl: clamp(3.5rem, 3.1479rem + 1.5023vw, 4.5rem);
@@ -387,7 +388,7 @@ const heroPhrases = [
       align-items: center;
       justify-content: space-between;
       gap: var(--spacing-sm);
-      padding: var(--spacing-xs) var(--spacing-lg);
+      padding: var(--spacing-xs) var(--spacing-sm);
       border-bottom: 1px solid color-mix(in oklab, var(--chat-border) 70%, transparent);
       background: color-mix(in oklab, var(--chat-surface-soft) 82%, transparent);
     }
@@ -425,17 +426,20 @@ const heroPhrases = [
     }
 
     .chat-messages {
-      min-height: 11rem;
-      max-height: 42vh;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      min-height: 17rem;
+      max-height: min(56rem, 68vh);
       overflow-y: auto;
-      padding: var(--spacing-lg);
+      padding: var(--spacing-sm);
       background: color-mix(in oklab, var(--chat-surface) 92%, transparent);
       scrollbar-width: thin;
       scrollbar-color: color-mix(in oklab, var(--color-accent) 45%, transparent) transparent;
     }
 
     .chat-messages::-webkit-scrollbar {
-      width: 0.5rem;
+      width: 0.45rem;
     }
 
     .chat-messages::-webkit-scrollbar-thumb {
@@ -443,61 +447,86 @@ const heroPhrases = [
       border-radius: 999px;
     }
 
-    .msg {
-      max-width: 80%;
-      padding: var(--spacing-sm);
-      border-radius: calc(var(--radius-lg) + 0.2rem);
-      margin-bottom: var(--spacing-sm);
-      line-height: 1.45;
-      font-size: var(--text-base);
-      white-space: pre-wrap;
-      word-break: break-word;
-      box-shadow: 0 4px 12px color-mix(in oklab, var(--color-black) 8%, transparent);
+    .msg-row {
+      display: flex;
+      width: 100%;
     }
 
-    .msg:last-child {
-      margin-bottom: 0;
+    .msg-row.user {
+      justify-content: flex-end;
+    }
+
+    .msg-row.assistant {
+      justify-content: flex-start;
+    }
+
+    .msg {
+      width: fit-content;
+      min-width: 0;
+      max-width: min(30rem, 70%);
+      padding: 0.48rem 0.72rem 0.56rem;
+      border-radius: 0.95rem;
+      margin: 0;
+      line-height: 1.35;
+      font-size: 0.92rem;
+      white-space: pre-wrap;
+      word-break: break-word;
+      box-shadow: 0 3px 10px color-mix(in oklab, var(--color-black) 9%, transparent);
     }
 
     .msg.user {
-      margin-left: auto;
-      background: var(--color-accent);
+      background-color: var(--color-accent);
+      border: 1px solid color-mix(in oklab, var(--chat-border) 45%, transparent);
       color: var(--color-fg-on-accent-most-contrast);
-      border-top-right-radius: var(--radius-sm);
+      border-bottom-right-radius: 0.25rem;
+      transition:
+        background-color var(--accent-speed) linear,
+        border-color var(--accent-speed) linear,
+        color 0.3s ease;
+    }
+    
+    .msg.user .msg-label {
+      text-align: right;
+      color: color-mix(in oklab, var(--color-fg-on-accent-most-contrast) 70%, transparent);
+      transition: color var(--accent-speed) linear;
     }
 
     .msg.assistant {
-      margin-right: auto;
-      background: color-mix(in oklab, var(--chat-surface-soft) 82%, transparent);
+      background: color-mix(in oklab, var(--chat-surface-soft) 52%, var(--color-background-1));
+      border: 1px solid color-mix(in oklab, var(--chat-border) 60%, transparent);
       color: var(--color-foreground);
-      border-top-left-radius: var(--radius-sm);
+      border-bottom-left-radius: 0.25rem;
     }
 
     .msg-label {
       display: block;
-      margin-bottom: 0.32rem;
+      margin-bottom: 0.1rem;
       font-family: var(--font-mono);
-      font-size: var(--text-xs);
-      letter-spacing: 0.03em;
+      font-size: 0.58rem;
+      letter-spacing: 0.06em;
       text-transform: uppercase;
-      opacity: 0.72;
+      font-weight: 700;
+      opacity: 0.65;
     }
 
     .msg-body {
       display: block;
+      font-size: clamp(0.86rem, 0.16vw + 0.83rem, 0.95rem);
+      line-height: 1.34;
     }
 
     .msg.pending {
       border: 1px dashed color-mix(in oklab, var(--chat-border) 75%, transparent);
       box-shadow: none;
-      opacity: 0.86;
+      opacity: 0.78;
+      font-style: italic;
     }
 
     .chat-form {
       display: flex;
       align-items: center;
-      gap: var(--spacing-sm);
-      padding: var(--spacing-sm) var(--spacing-lg);
+      gap: var(--spacing-xs);
+      padding: var(--spacing-xs) var(--spacing-sm);
       border-top: 1px solid color-mix(in oklab, var(--chat-border) 70%, transparent);
       background: color-mix(in oklab, var(--chat-surface-soft) 86%, transparent);
     }
@@ -507,12 +536,12 @@ const heroPhrases = [
       border: 0;
       outline: 0;
       border: 1px solid color-mix(in oklab, var(--color-accent) 72%, var(--chat-border));
-      padding: var(--spacing-sm) var(--spacing-lg);
+      padding: var(--spacing-xs) var(--spacing-sm);
       border-radius: 999px;
       background: color-mix(in oklab, var(--chat-surface) 72%, transparent);
       color: var(--color-foreground);
       font-family: var(--font-sans);
-      font-size: var(--text-base);
+      font-size: clamp(0.9rem, 0.12vw + 0.87rem, 0.96rem);
       transition:
         border-color var(--accent-speed) linear var(--accent-dot-lag),
         box-shadow 0.2s ease,
@@ -531,15 +560,15 @@ const heroPhrases = [
     .chat-send {
       border: 0;
       border-radius: 999px;
-      min-width: 6rem;
-      padding: var(--spacing-sm) var(--spacing-lg);
+      min-width: 5rem;
+      padding: var(--spacing-xs) var(--spacing-sm);
       background-color: var(--color-accent);
       color: var(--color-fg-on-accent-most-contrast);
       font-family: var(--font-mono);
-      font-size: var(--text-xs);
+      font-size: clamp(0.62rem, 0.2vw + 0.58rem, 0.7rem);
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.03em;
+      letter-spacing: 0.06em;
       cursor: pointer;
       border: 1px solid color-mix(in oklab, var(--chat-border) 55%, transparent);
       transition:
@@ -614,7 +643,13 @@ const heroPhrases = [
       }
 
       .msg {
-        max-width: 94%;
+        max-width: 88%;
+      }
+
+      .chat-messages {
+        padding: var(--spacing-sm) var(--spacing-xs);
+        gap: var(--spacing-xs);
+        max-height: min(40rem, 62vh);
       }
 
       .chat-form {
@@ -948,27 +983,33 @@ const heroPhrases = [
           list.scrollTop = list.scrollHeight;
         }
 
-        function addMessage(role, content) {
-          var cls = role === 'user' ? 'msg user' : 'msg assistant';
+        function createMessageElement(role, content, isPending) {
           var who = role === 'user' ? 'You' : 'Ali';
+          var row = document.createElement('div');
+          row.className = 'msg-row ' + role;
 
-          var el = document.createElement('div');
-          el.className = cls;
-          el.innerHTML =
+          var bubble = document.createElement('div');
+          bubble.className = 'msg ' + role + (isPending ? ' pending' : '');
+          bubble.innerHTML =
             '<span class="msg-label">' +
             who +
             '</span><div class="msg-body">' +
             escapeHtml(content).replace(/\n/g, '<br>') +
             '</div>';
 
+          row.appendChild(bubble);
+          return row;
+        }
+
+        function addMessage(role, content) {
+          var el = createMessageElement(role, content, false);
+
           list.appendChild(el);
           scrollToBottom();
         }
 
         function showPending() {
-          pending = document.createElement('div');
-          pending.className = 'msg assistant pending';
-          pending.innerHTML = '<span class="msg-label">Ali</span><div class="msg-body">Thinking...</div>';
+          pending = createMessageElement('assistant', 'Thinking...', true);
           list.appendChild(pending);
           scrollToBottom();
         }
